@@ -65,8 +65,8 @@
 ;Problem 26
 ;Write a function which returns the first X fibonacci numbers.
 (def __ #(->> (iterate (fn [[a b]] [b (+ a b)]) [1 1])
-            (take %)
-            (map first)))
+              (take %)
+              (map first)))
 
 (= (__ 3) '(1 1 2))
 (= (__ 6) '(1 1 2 3 5 8))
@@ -82,3 +82,90 @@
 (true? (__ '(1 1 3 3 1 1)))
 (false? (__ '(:a :b :c)))
 
+;Problem 28
+;Write a function which flattens a sequence.
+(def __
+  (fn [xs] (if-not (some coll? xs)
+             xs
+             (recur (mapcat #(if (coll? %) % [%]) xs)))))
+
+(= (__ '((1 2) 3 [4 [5 6]])) '(1 2 3 4 5 6))
+(= (__ ["a" ["b"] "c"]) '("a" "b" "c"))
+(= (__ '((((:a))))) '(:a))
+
+;↓ 他人の解答
+#_(def __  (fn f [x] (if (coll? x) (mapcat f x) [x])))
+;↑再帰なってる
+#_((fn fac [x]
+   (if (zero? x)
+     0
+     (+ x (fac (dec x))))) 5)
+
+#_(def __ #(filter (complement sequential?)
+                   (rest (tree-seq sequential? seq %))))
+;complement 引数fを取り、fと同じ引数を取り、(あれば)同じ副作用があり、反対の真偽値を返すfnを返します。
+;(map even? '(1 2 3 4))
+;=> (false true false true)
+;(map (complement even?) '(1 2 3 4))
+;=> (true false true false)
+;squential? collがSequentialを実装している場合はtrueを返します
+;tree-seq
+
+;Problem 29
+;Write a function which takes a string and returns a new string containing only the capital letters.
+(def __ #(apply str (re-seq #"[A-Z]" %)) )
+
+(= (__ "HeLlO, WoRlD!") "HLOWRD")
+(empty? (__ "nothing"))
+(= (__ "$#A(*&987Zf") "AZ")
+
+
+;Problem 30
+;Write a function which removes consecutive duplicates from a sequence.
+(def __ #(reduce (fn [xs v] (if (= v (last xs))
+                              xs
+                              (conj xs v))) [] %))
+
+(= (apply str (__ "Leeeeeerrroyyy")) "Leroy")
+(= (__ [1 1 2 3 3 2 2 3]) '(1 2 3 2 3))
+(= (__ [[1 2] [1 2] [3 4] [1 2]]) '([1 2] [3 4] [1 2]))
+
+;他人の解答
+#_ #(map first (partition-by identity %))
+;(partition-by identity "Leeeeeerrroyyy")
+;=>((\L) (\e \e \e \e \e \e) (\r \r \r) (\o) (\y \y \y))
+
+;Problem 31
+;Write a function which packs consecutive duplicates into sub-lists.
+(def __  #(partition-by identity %))
+
+(= (partition-by identity [1 1 2 1 1 1 3 3]) '((1 1) (2) (1 1 1) (3 3)))
+(= (__ [:a :a :b :b :c]) '((:a :a) (:b :b) (:c)))
+(= (__ [[1 2] [1 2] [3 4]]) '(([1 2] [1 2]) ([3 4])))
+
+;Problem 32
+;Write a function which duplicates each element of a sequence.
+(def __ (fn [xs] (apply concat (map #(vector % %) xs))))
+
+(= (__ [1 2 3]) '(1 1 2 2 3 3))
+(= (__ [:a :a :b :b]) '(:a :a :a :a :b :b :b :b))
+(= (__ [[1 2] [3 4]]) '([1 2] [1 2] [3 4] [3 4]))
+(= (__ [44 33]) [44 44 33 33])
+
+;他人の解答
+#_(def __ #(interleave % %))
+;(interleave [:a :b :c] [1 2 3])
+;=> (:a 1 :b 2 :c 3)
+
+;Problem 33
+;Write a function which replicates each element of a sequence a variable number of times.
+(def __ (fn [xs n] (mapcat #(repeat n %) xs)))
+
+(= (__ [1 2 3] 2) '(1 1 2 2 3 3))
+(= (__ [:a :b] 4) '(:a :a :a :a :b :b :b :b))
+(= (__ [4 5 6] 1) '(4 5 6))
+(= (__ [[1 2] [3 4]] 2) '([1 2] [1 2] [3 4] [3 4]))
+(= (__ [44 33] 2) [44 44 33 33])
+
+;他人の解答
+#_(def __ #(mapcat (partial repeat %2) %1)) 
