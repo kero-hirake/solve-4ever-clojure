@@ -97,9 +97,9 @@
 #_(def __  (fn f [x] (if (coll? x) (mapcat f x) [x])))
 ;↑再帰なってる
 #_((fn fac [x]
-   (if (zero? x)
-     0
-     (+ x (fac (dec x))))) 5)
+     (if (zero? x)
+       0
+       (+ x (fac (dec x))))) 5)
 
 #_(def __ #(filter (complement sequential?)
                    (rest (tree-seq sequential? seq %))))
@@ -113,7 +113,7 @@
 
 ;Problem 29
 ;Write a function which takes a string and returns a new string containing only the capital letters.
-(def __ #(apply str (re-seq #"[A-Z]" %)) )
+(def __ #(apply str (re-seq #"[A-Z]" %)))
 
 (= (__ "HeLlO, WoRlD!") "HLOWRD")
 (empty? (__ "nothing"))
@@ -131,7 +131,7 @@
 (= (__ [[1 2] [1 2] [3 4] [1 2]]) '([1 2] [3 4] [1 2]))
 
 ;他人の解答
-#_ #(map first (partition-by identity %))
+#_#(map first (partition-by identity %))
 ;(partition-by identity "Leeeeeerrroyyy")
 ;=>((\L) (\e \e \e \e \e \e) (\r \r \r) (\o) (\y \y \y))
 
@@ -168,4 +168,44 @@
 (= (__ [44 33] 2) [44 44 33 33])
 
 ;他人の解答
-#_(def __ #(mapcat (partial repeat %2) %1)) 
+#_(def __ #(mapcat (partial repeat %2) %1))
+
+;Problem 34
+;Write a function which creates a list of all integers in a given range.
+
+(def __ #(take (- %2 %1) (iterate inc %1)))
+
+(= (__ 1 4) '(1 2 3))
+(= (__ -2 2) '(-2 -1 0 1))
+(= (__ 5 8) '(5 6 7))
+
+;Problem 38
+;Write a function which takes a variable number of parameters and returns the maximum value.
+(def __ (fn [& xs] (-> xs sort last)))
+
+(= (__ 1 8 3 4) 8)
+(= (__ 30 20) 30)
+(= (__ 45 67 11) 67)
+
+;Problem 39
+;Write a function which takes two sequences and returns the first item from each, then the second item from each, then the third, etc.
+;その1
+(fn  [xs a b]
+  (let [fa (first a)
+        fb (first b)]
+    (if-not (and fa fb)
+      xs
+      (recur (into xs [fa fb]) (rest a) (rest b))))) []
+;その2
+(def __ (fn [a b] (-> (map #(vector %1 %2)  a b) flatten)))
+
+
+(+ 1 2)
+(= (__ [1 2 3] [:a :b :c]) '(1 :a 2 :b 3 :c))
+(= (__ [1 2] [3 4 5 6]) '(1 3 2 4))
+(= (__ [1 2 3 4] [5]) [1 5])
+(= (__ [30 20] [25 15]) [30 25 20 15])
+
+;他の人の解答
+#_ #(flatten (map list % %2))
+;mapcat list
