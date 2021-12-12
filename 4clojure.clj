@@ -209,3 +209,49 @@
 ;他の人の解答
 #_ #(flatten (map list % %2))
 ;mapcat list
+
+;Problem 40
+;Write a function which separates the items of a sequence by an arbitrary value.
+
+(def __ #(-> (interleave %2 (repeat  %1)) drop-last)) 
+                                                     
+(= (__ 0 [1 2 3]) [1 0 2 0 3])
+(= (apply str (__ ", " ["one" "two" "three"])) "one, two, three")
+(= (__ :z [:a :b :c :d]) [:a :z :b :z :c :z :d])
+
+;Problem 41
+;Write a function which drops every Nth item from a sequence.
+
+(def __ (fn [xs n]
+          (mapcat #(->> % drop-last (remove nil?)) (partition n n  (repeat nil) xs))))
+
+
+(= (__ [1 2 3 4 5 6 7 8] 3) [1 2 4 5 7 8])
+(= (__ [:a :b :c :d :e :f] 2) [:a :c :e])
+(= (__ [1 2 3 4 5 6] 4) [1 2 3 5 6])
+
+;他人の回答
+#_#(apply concat (partition-all (dec %2) %2 %))
+#_(fn [coll n]
+  (mapcat #(take (dec n) %) (partition-all n coll)))
+
+;Problem 42
+;Write a function which calculates factorials.
+(def __ #(apply * (range 1 (inc %))))
+
+(= (__ 1) 1)
+(= (__ 3) 6)
+(= (__ 5) 120)
+(= (__ 8) 40320)
+
+;Problem 47
+;The contains? function checks if a KEY is present in a given collection. 
+;This often leads beginner clojurians to use it incorrectly 
+;with numerically indexed collections like vectors and lists.
+
+;contains? は与えられたコレクションの「キー」があるかをチェックする
+(contains? #{4 5 6} __)
+(contains? [1 1 1 1 1] 4) ;=> true インデックスは4まで
+(contains? {4 :a 2 :b} 4) ;=> true 
+(not (contains? [1 2 4] 4)) ;true インデックスは2まで
+
