@@ -255,3 +255,45 @@
 (contains? {4 :a 2 :b} 4) ;=> true 
 (not (contains? [1 2 4] 4)) ;true インデックスは2まで
 
+
+;Problem 44
+;Write a function which can rotate a sequence in either direction.
+;(take -2 [1 2 3 4 5])
+;(take )(repeat %2)
+#_(def __ #(->> (cycle %2)
+              (drop (+ (count %2) %1))
+              (take (count %2))))
+(def __ #(let [c (count %2)]
+           (->> (cycle %2)
+                (drop  (mod %1 c))
+                (take c))))
+
+(= (__ 2 [1 2 3 4 5]) '(3 4 5 1 2))
+(= (__ -2 [1 2 3 4 5]) '(4 5 1 2 3))
+(= (__ 6 [1 2 3 4 5]) '(2 3 4 5 1))
+(= (__ 1 '(:a :b :c)) '(:b :c :a))
+(= (__ -4 '(:a :b :c)) '(:c :a :b))
+
+
+;Problem 49
+;Write a function which will split a sequence into two parts.
+;(take  3 [1 2 3 4 5 6])
+;(take 2 [[1 2] [3 4] [5 6]])
+;(drop  3 [1 2 3 4 5 6])
+(def __ #(vector (take %1 %2) (drop %1 %2)))
+
+(= (__ 3 [1 2 3 4 5 6]) [[1 2 3] [4 5 6]])
+(= (__ 1 [:a :b :c :d]) [[:a] [:b :c :d]])
+(= (__ 2 [[1 2] [3 4] [5 6]]) [[[1 2] [3 4]] [[5 6]]])
+
+ ;他の人の答え
+#_(juxt take drop)
+
+
+(= [1 2 [3 4 5] [1 2 3 4 5]] 
+   (let 
+    [[a b & c :as d] [1 2 3 4 5]]
+    #_[a 1
+     b 2
+     c [3 4 5]
+     d [1 2 3 4 5]] [a b c d]))
