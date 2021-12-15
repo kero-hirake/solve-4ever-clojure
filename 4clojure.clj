@@ -207,14 +207,14 @@
 (= (__ [30 20] [25 15]) [30 25 20 15])
 
 ;他の人の解答
-#_ #(flatten (map list % %2))
+#_#(flatten (map list % %2))
 ;mapcat list
 
 ;Problem 40
 ;Write a function which separates the items of a sequence by an arbitrary value.
 
-(def __ #(-> (interleave %2 (repeat  %1)) drop-last)) 
-                                                     
+(def __ #(-> (interleave %2 (repeat  %1)) drop-last))
+
 (= (__ 0 [1 2 3]) [1 0 2 0 3])
 (= (apply str (__ ", " ["one" "two" "three"])) "one, two, three")
 (= (__ :z [:a :b :c :d]) [:a :z :b :z :c :z :d])
@@ -233,7 +233,7 @@
 ;他人の回答
 #_#(apply concat (partition-all (dec %2) %2 %))
 #_(fn [coll n]
-  (mapcat #(take (dec n) %) (partition-all n coll)))
+    (mapcat #(take (dec n) %) (partition-all n coll)))
 
 ;Problem 42
 ;Write a function which calculates factorials.
@@ -261,8 +261,8 @@
 ;(take -2 [1 2 3 4 5])
 ;(take )(repeat %2)
 #_(def __ #(->> (cycle %2)
-              (drop (+ (count %2) %1))
-              (take (count %2))))
+                (drop (+ (count %2) %1))
+                (take (count %2))))
 (def __ #(let [c (count %2)]
            (->> (cycle %2)
                 (drop  (mod %1 c))
@@ -274,6 +274,15 @@
 (= (__ 1 '(:a :b :c)) '(:b :c :a))
 (= (__ -4 '(:a :b :c)) '(:c :a :b))
 
+
+;Problem 46
+;Write a higher-order function which flips the order of the arguments of an input function.
+(def __  #(fn [a b] (% b a)))
+
+(= 3 ((__ nth) 2 [1 2 3 4 5]))
+(= true ((__ >) 7 8))
+(= 4 ((__ quot) 2 8))
+(= [1 2 3] ((__ take) [1 2 3 4 5] 3))
 
 ;Problem 49
 ;Write a function which will split a sequence into two parts.
@@ -290,10 +299,19 @@
 #_(juxt take drop)
 
 
-(= [1 2 [3 4 5] [1 2 3 4 5]] 
-   (let 
+(= [1 2 [3 4 5] [1 2 3 4 5]]
+   (let
     [[a b & c :as d] [1 2 3 4 5]]
-    #_[a 1
-     b 2
-     c [3 4 5]
-     d [1 2 3 4 5]] [a b c d]))
+     #_[a 1
+        b 2
+        c [3 4 5]
+        d [1 2 3 4 5]] [a b c d]))
+
+;Problem 50
+;Write a function which takes a sequence consisting of items with different types and splits them up into a set of homogeneous sub-sequences. The internal order of each sub-sequence should be maintained, but the sub-sequences themselves can be returned in any order (this is why 'set' is used in the test cases) .
+(def __ #(->> (group-by type %)
+              vals))
+
+(= (set (__ [1 :a 2 :b 3 :c])) #{[1 2 3] [:a :b :c]})
+(= (set (__ [:a "foo"  "bar" :b])) #{[:a :b] ["foo" "bar"]})
+(= (set (__ [[1 2] :a [3 4] 5 6 :b])) #{[[1 2] [3 4]] [:a :b] [5 6]})
