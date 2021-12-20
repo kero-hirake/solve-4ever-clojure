@@ -315,3 +315,57 @@
 (= (set (__ [1 :a 2 :b 3 :c])) #{[1 2 3] [:a :b :c]})
 (= (set (__ [:a "foo"  "bar" :b])) #{[:a :b] ["foo" "bar"]})
 (= (set (__ [[1 2] :a [3 4] 5 6 :b])) #{[[1 2] [3 4]] [:a :b] [5 6]})
+
+;type xの：typeメタデータ、またはない場合はそのクラスを返します
+;class xのクラスを返します
+#_(doseq [a [1 1.0 2/3 \a "a" nil true [] {} #{}]]
+    (println (str a " type-> " (type a) " class-> " (class a))))
+
+
+;Problem 61
+;Write a function which takes a vector of keys and a vector of values and constructs a map from them.
+(def __ (fn [ks vs]
+          (->>  (map #(hash-map %1 %2) ks vs)
+                (reduce merge))))
+
+
+(= (__ [:a :b :c] [1 2 3]) {:a 1, :b 2, :c 3})
+(= (__ [1 2 3 4] ["one" "two" "three"]) {1 "one", 2 "two", 3 "three"})
+(= (__ [:foo :bar] ["foo" "bar" "baz"]) {:foo "foo", :bar "bar"})
+
+;他の回答
+#_#(apply hash-map (interleave %1 %2))
+#_#(apply hash-map (mapcat list %1 %2))
+#_#(into {} (map vector %1 %2))
+
+
+;Problem 66
+;Given two integers, write a function which returns the greatest common divisor.
+;(mod 1023 853)
+;(mod 853 170)
+;(mod 170 3)
+;(mod 3 2) 
+;(mod 2 1) 1
+
+;(mod 10 5) 5
+
+;(mod 2 4)
+;(mod 4 2) 2
+
+(def __ (fn [a b]
+          (let [c (mod a b)]
+            (if (zero? c)
+              b
+              (recur b c)))))
+
+
+(= (__ 2 4) 2)
+(= (__ 10 5) 5)
+(= (__ 5 7) 1)
+(= (__ 1023 858) 33)
+
+;他の答え
+#_(fn [a b]
+  (if (zero? b) 
+    a
+   (recur b (mod a b))))
