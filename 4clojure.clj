@@ -339,6 +339,9 @@
 #_#(into {} (map vector %1 %2))
 
 
+
+
+
 ;Problem 66
 ;Given two integers, write a function which returns the greatest common divisor.
 ;(mod 1023 853)
@@ -366,6 +369,51 @@
 
 ;他の答え
 #_(fn [a b]
-  (if (zero? b) 
-    a
-   (recur b (mod a b))))
+    (if (zero? b)
+      a
+      (recur b (mod a b))))
+
+;Problem 81
+;Write a function which returns the intersection of two sets. ;
+;The intersection is the sub-set of items that each set has in common.
+
+(def __ #(let [u (clojure.set/union %1 %2)
+               d1 (clojure.set/difference %1 %2)
+               d2 (clojure.set/difference %2 %1)]
+           (->> u
+                (remove d1)
+                (remove d2)
+                set)))
+
+(= (__ #{0 1 2 3} #{2 3 4 5}) #{2 3})
+(= (__ #{0 1 2} #{3 4 5}) #{})
+(= (__ #{:a :b :c :d} #{:c :e :a :f :d}) #{:a :c :d})
+(= (__ #{0 1 2 3} #{2 3 4 5}) #{2 3})
+
+;他の回答
+(comp set filter)
+#(-> (filter %1 %2)
+     set)
+clojure.set/select
+
+
+;Problem 83
+;Write a function which takes a variable number of booleans. 
+;Your function should return true if some of the parameters are true, 
+;but not all of the parameters are true. 
+;Otherwise your function should return false.
+
+(def __ (fn [& xs]
+          (not (or
+                (every? false? xs)
+                (every? true? xs)))))
+
+(= false (__ false false))
+(= true (__ true false))
+(= false (__ true))
+(= true (__ false true false))
+(= false (__ true true true))
+(= true (__ true true true false))
+
+;他の答え
+not=
