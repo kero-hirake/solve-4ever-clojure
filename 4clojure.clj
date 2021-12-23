@@ -417,3 +417,36 @@ clojure.set/select
 
 ;他の答え
 not=
+
+
+;Problem 88
+;Write a function which returns the symmetric difference of two sets. 
+;The symmetric difference is the set of items belonging to one but not both of the two sets.
+(def __ #(let [s1 (remove %1 %2)
+               s2 (remove %2 %1)]
+           (set (clojure.set/union s1 s2))))
+
+
+(= (__ #{1 2 3 4 5 6} #{1 3 5 7}) #{2 4 6 7})
+(= (__ #{:a :b :c} #{}) #{:a :b :c})
+(= (__ #{} #{4 5 6}) #{4 5 6})
+(= (__ #{[1 2] [2 3]} #{[2 3] [3 4]}) #{[1 2] [3 4]})
+
+;他の答え
+;#(into (set (remove %1 %2)) (remove %2 %1))
+;reduce #((if (%1 %2) disj conj) %1 %2)  
+;  if (%1 %2) は if (#{1 2 3} 1) -> 1、if (#{1 2 3} 4) -> nil
+
+
+;Problem 90
+;Write a function which calculates the Cartesian product of two sets.
+(def __ #(set (for [a %1 b %2] [a b])))
+
+(= (__ #{"ace" "king" "queen"} #{"♠" "♥" "♦" "♣"})
+   #{["ace"   "♠"] ["ace"   "♥"] ["ace"   "♦"] ["ace"   "♣"]
+     ["king"  "♠"] ["king"  "♥"] ["king"  "♦"] ["king"  "♣"]
+     ["queen" "♠"] ["queen" "♥"] ["queen" "♦"] ["queen" "♣"]})
+(= (__ #{1 2 3} #{4 5})
+   #{[1 4] [2 4] [3 4] [1 5] [2 5] [3 5]})
+(= 300 (count (__ (into #{} (range 10))
+                  (into #{} (range 30)))))
