@@ -221,10 +221,8 @@
 
 ;Problem 41
 ;Write a function which drops every Nth item from a sequence.
-
 (def __ (fn [xs n]
           (mapcat #(->> % drop-last (remove nil?)) (partition n n  (repeat nil) xs))))
-
 
 (= (__ [1 2 3 4 5 6 7 8] 3) [1 2 4 5 7 8])
 (= (__ [:a :b :c :d :e :f] 2) [:a :c :e])
@@ -244,16 +242,28 @@
 (= (__ 5) 120)
 (= (__ 8) 40320)
 
-;Problem 47
-;The contains? function checks if a KEY is present in a given collection. 
-;This often leads beginner clojurians to use it incorrectly 
-;with numerically indexed collections like vectors and lists.
 
-;contains? は与えられたコレクションの「キー」があるかをチェックする
-(contains? #{4 5 6} __)
-(contains? [1 1 1 1 1] 4) ;=> true インデックスは4まで
-(contains? {4 :a 2 :b} 4) ;=> true 
-(not (contains? [1 2 4] 4)) ;true インデックスは2まで
+;Problem 43
+;Write a function which reverses the interleave process into x number of subsequences.
+;(take-nth 2 [0 1 2 3 4 5])
+(def __ (fn [xs i]
+          (loop [ys xs
+                 j i
+                 result '()]
+            (if (zero? j)
+              (reverse result)
+              (recur (rest ys) (dec j)
+                     (conj result (take-nth i ys)))))))
+
+(= (__ [1 2 3 4 5 6] 2) '((1 3 5) (2 4 6)))
+(= (__ (range 9) 3) '((0 3 6) (1 4 7) (2 5 8)))
+(= (__ (range 10) 5) '((0 5) (1 6) (2 7) (3 8) (4 9)))
+
+;他の答え
+#(apply map list (partition %2 %1))
+;(partition 2 [1 2 3 4 5 6]) ;((1 2) (3 4) (5 6))
+;(apply map list '((1 2) (3 4) (5 6)))
+;(map list  '(1 2) '(3 4) '(5 6)) ;((1 3 5) (2 4 6))
 
 
 ;Problem 44
@@ -283,6 +293,18 @@
 (= true ((__ >) 7 8))
 (= 4 ((__ quot) 2 8))
 (= [1 2 3] ((__ take) [1 2 3 4 5] 3))
+
+
+;Problem 47
+;The contains? function checks if a KEY is present in a given collection. 
+;This often leads beginner clojurians to use it incorrectly 
+;with numerically indexed collections like vectors and lists.
+
+;contains? は与えられたコレクションの「キー」があるかをチェックする
+(contains? #{4 5 6} __)
+(contains? [1 1 1 1 1] 4) ;=> true インデックスは4まで
+(contains? {4 :a 2 :b} 4) ;=> true 
+(not (contains? [1 2 4] 4)) ;true インデックスは2まで
 
 ;Problem 49
 ;Write a function which will split a sequence into two parts.
@@ -450,3 +472,22 @@ not=
    #{[1 4] [2 4] [3 4] [1 5] [2 5] [3 5]})
 (= 300 (count (__ (into #{} (range 10))
                   (into #{} (range 30)))))
+
+;Problem 107
+;Given a positive integer n, return a function (f x) which computes xn.
+
+(def __ #(fn [x]
+           (int (Math/pow x %))))
+;↑Math/powが使えない?
+
+;(reduce * 1 (repeat 8 2))
+;(apply * (repeat 8 2))
+(def __ #(fn [x]
+           (apply * (repeat % x))))
+
+
+(= 256 ((__ 2) 16), ((__ 8) 2))
+(= [1 8 27 64] (map (__ 3) [1 2 3 4]))
+(= [1 2 4 8 16] (map #((__ %) 2) [0 1 2 3 4]))
+
+
