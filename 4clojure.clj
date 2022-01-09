@@ -344,6 +344,27 @@
     (println (str a " type-> " (type a) " class-> " (class a))))
 
 
+;Problem 55
+;Write a function which returns a map containing the number of occurences of each distinct item in a sequence.
+(type {:oen :two}) ;clojure.lang.PersistentArrayMap
+(type (first {:one :two})) ;clojure.lang.MapEntry
+
+(#(zipmap (keys %) (map count (vals %))) (first {1 [1 1 1]}))
+(def __ (fn [xs] (->> (group-by identity xs)
+                      (reduce #(assoc %1 (key %2) (count (val %2))) {}))))
+
+(= (__ [1 1 2 3 2 1 1]) {1 4, 2 2, 3 1})
+(= (__ [:b :a :b :a :b]) {:a 2, :b 3})
+(= (__ '([1 2] [1 3] [1 3])) {[1 2] 1, [1 3] 2})
+
+;他の回答
+reduce #(assoc %1 %2 (inc (%1 %2 0))) {}
+;(reduce #(assoc %1 %2 (inc (%1 %2 0))) {} [1 1 2 3 2 1 1])
+;(assoc {} 1 (inc ({} 1 0)))
+;(assoc {1 1} 1 (inc ({1 1} 1 0)))
+;(assoc {1 2} 1 (inc ({1 2} 2 0)))
+;(assoc {1 2, 2 1} 1 (inc ({1 2, 2 1} 3 0)))
+
 ;Problem 61
 ;Write a function which takes a vector of keys and a vector of values and constructs a map from them.
 (def __ (fn [ks vs]
