@@ -219,6 +219,9 @@
 (= (apply str (__ ", " ["one" "two" "three"])) "one, two, three")
 (= (__ :z [:a :b :c :d]) [:a :z :b :z :c :z :d])
 
+;他人の回答
+(def __ #(rest (mapcat vector (repeat %1) %2)))
+
 ;Problem 41
 ;Write a function which drops every Nth item from a sequence.
 (def __ (fn [xs n]
@@ -263,8 +266,8 @@
 #(apply map list (partition %2 %1))
 ;(partition 2 [1 2 3 4 5 6]) ;((1 2) (3 4) (5 6))
 ;(apply map list '((1 2) (3 4) (5 6)))
-;(map list  '(1 2) '(3 4) '(5 6)) ;((1 3 5) (2 4 6))
-
+;(map list  '(1 2) '(3 4) '(5 6)) 
+;((1 3 5) (2 4 6))
 
 ;Problem 44
 ;Write a function which can rotate a sequence in either direction.
@@ -284,6 +287,9 @@
 (= (__ 1 '(:a :b :c)) '(:b :c :a))
 (= (__ -4 '(:a :b :c)) '(:c :a :b))
 
+;他の回答
+#(let [x (mod %1 (count %2))]
+   (concat (drop x %2) (take x %2)))
 
 ;Problem 46
 ;Write a higher-order function which flips the order of the arguments of an input function.
@@ -319,15 +325,8 @@
 
  ;他の人の答え
 #_(juxt take drop)
+; ((juxt a b c) x) => [(a x) (b x) (c x)]
 
-
-(= [1 2 [3 4 5] [1 2 3 4 5]]
-   (let
-    [[a b & c :as d] [1 2 3 4 5]]
-     #_[a 1
-        b 2
-        c [3 4 5]
-        d [1 2 3 4 5]] [a b c d]))
 
 ;Problem 50
 ;Write a function which takes a sequence consisting of items with different types and splits them up into a set of homogeneous sub-sequences. The internal order of each sub-sequence should be maintained, but the sub-sequences themselves can be returned in any order (this is why 'set' is used in the test cases) .
@@ -343,6 +342,36 @@
 #_(doseq [a [1 1.0 2/3 \a "a" nil true [] {} #{}]]
     (println (str a " type-> " (type a) " class-> " (class a))))
 
+;Problem 51
+(= [1 2 [3 4 5] [1 2 3 4 5]]
+   (let
+    [[a b & c :as d] [1 2 3 4 5]]
+     #_[a 1
+        b 2
+        c [3 4 5]
+        d [1 2 3 4 5]] [a b c d]))
+
+;Problem 56
+;Write a function which removes the duplicates from a sequence. Order of the items must be maintained.
+
+(reduce (fn [xs v]
+          (if (empty? (filter #(= % v) xs))
+            (conj xs v)
+            xs)) [] [1 2 1 3 1 2 4] )
+
+(= (__ [1 2 1 3 1 2 4]) [1 2 3 4])
+(= (__ [:a :a :b :b :c :c]) [:a :b :c])
+(= (__ '([2 4] [1 2] [1 3] [1 3])) '([2 4] [1 2] [1 3]))
+(= (__ (range 50)) (range 50))
+
+;他の回答
+reduce #(if (some #{%2} %1) %1 (conj %1 %2)) []
+; some 
+;collに含まれる任意のxについて、 (pred x) の最初の論理的真値を返し、それ以外はnilを返します。
+;例えば、これは :fred がシーケンスの中にあれば :fred を返し、そうでなければ nil を返します。 (some #{:fred} coll)
+(some even? [1 2 3 4]) ;true
+(some even? [1 3 5 7]) ;nil
+(some #(when (even? %) %) '(1 2 3 4)) ;;2
 
 ;Problem 55
 ;Write a function which returns a map containing the number of occurences of each distinct item in a sequence.
